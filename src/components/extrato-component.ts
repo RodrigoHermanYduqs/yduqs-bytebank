@@ -4,13 +4,14 @@ import { GrupoTransacao } from "../types/transacao/GrupoTransacao.js";
 import { formatarData, formatarMoeda } from "../utils/formatters.js";
 
 const elementoRegistroTransacoesExtrato: HTMLElement = document.querySelector(".extrato .registro-transacoes");
+const conta : Conta = new Conta("Rodrigo Herman", new Date("2025/02/04"));
 
 renderizarExtrato();
 
 function renderizarExtrato(){
     elementoRegistroTransacoesExtrato.innerHTML = "";
 
-    const grupoTransacoes : GrupoTransacao[] = Conta.getGruposTransacoes();
+    const grupoTransacoes : GrupoTransacao[] = conta.getGruposTransacoes();
 
     let htmlExtrato = "";
 
@@ -23,10 +24,10 @@ function renderizarExtrato(){
             htmlTransacao += `
                 <div class="transacao-item">
                     <div class="transacao-info">
-                        <span class="tipo">${transacao.tipoTransacao}</span>
-                        <strong class="valor">${formatarMoeda(transacao.valor)}</strong>
+                        <span class="tipo">${transacao.getTipoTransacao()}</span>
+                        <strong class="valor">${formatarMoeda(transacao.getValor())}</strong>
                     </div>
-                    <time class="data">${formatarData(transacao.data,FormatoData.DIA_MES)}</time>
+                    <time class="data">${formatarData(transacao.getData(),FormatoData.DIA_MES)}</time>
                 </div>
                 `;
             
@@ -57,4 +58,5 @@ const ExtratoComponent = {
     }
 }
 
-export default ExtratoComponent;
+//export default ExtratoComponent;
+export { ExtratoComponent , conta };

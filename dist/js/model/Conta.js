@@ -1,84 +1,54 @@
 import { Transacao } from "./Transacao.js";
 import { TipoTransacao } from "../types/transacao/TipoTransacao.js";
-import { GrupoTransacao } from "../types/transacao/GrupoTransacao.js";
-
-export class Conta
-{
-    private titular: string;
-
-    private dataAbertura: Date;
-
-    private dataEncerramento: Date;
-
-    private limite: number;
-
-    private saldo: number = JSON.parse(localStorage.getItem("saldo")) || 0;
-
-    private transacoes: Transacao[] = JSON.parse(localStorage.getItem("transacoes"), (key: string, value: string) => {
-            if (key === "data") {
+export class Conta {
+    titular;
+    dataAbertura;
+    dataEncerramento;
+    limite;
+    saldo = JSON.parse(localStorage.getItem("saldo")) || 0;
+    transacoes = JSON.parse(localStorage.getItem("transacoes"), (key, value) => {
+        if (key === "data") {
             return new Date(value);
         }
         return value;
     }) || [];
-
-    constructor (titular: string, dataAbertura: Date)
-    {
+    constructor(titular, dataAbertura) {
         this.titular = titular;
         this.dataAbertura = dataAbertura;
     }
-
-    public getTitular(): string
-    {
+    getTitular() {
         return this.titular;
     }
-
-    public getDataAbertura(): Date
-    {
+    getDataAbertura() {
         return this.dataAbertura;
     }
-
-    public getDataEncerramento(): Date
-    {
+    getDataEncerramento() {
         return this.dataEncerramento;
     }
-
-    public setDataEncerramento(dataEncerramento : Date) : void
-    {
+    setDataEncerramento(dataEncerramento) {
         this.dataEncerramento = dataEncerramento;
     }
-    
-    public getLimite(): number
-    {
+    getLimite() {
         return this.limite;
     }
-
-    public setLimite(limite : number): void
-    {
+    setLimite(limite) {
         this.limite = limite;
     }
-
-    public getSaldo(): number {
+    getSaldo() {
         return this.saldo;
     }
-
-    public getDataAcesso(): Date {
+    getDataAcesso() {
         return new Date();
     }
-
-    public getGruposTransacoes(): GrupoTransacao[] {
-        const gruposTransacoes: GrupoTransacao[] = [];
+    getGruposTransacoes() {
+        const gruposTransacoes = [];
         //const listaTransacoes: Transacao[] = structuredClone(this.transacoes);
-        const listaTransacoes: Transacao[] = [];
-
-        this.transacoes.forEach(t => 
-            listaTransacoes.push(Transacao.clone(t))
-        );
-
-        const transacoesOrdenadas: Transacao[] = listaTransacoes.sort((t1:Transacao, t2:Transacao) => t2.getData().getTime() - t1.getData().getTime());
-        let labelAtualGrupoTransacao: string = "";
-
+        const listaTransacoes = [];
+        this.transacoes.forEach(t => listaTransacoes.push(Transacao.clone(t)));
+        const transacoesOrdenadas = listaTransacoes.sort((t1, t2) => t2.getData().getTime() - t1.getData().getTime());
+        let labelAtualGrupoTransacao = "";
         for (let transacao of transacoesOrdenadas) {
-            let labelGrupoTransacao: string = transacao.getData().toLocaleDateString("pt-br", { month: "long", year: "numeric" });
+            let labelGrupoTransacao = transacao.getData().toLocaleDateString("pt-br", { month: "long", year: "numeric" });
             if (labelAtualGrupoTransacao !== labelGrupoTransacao) {
                 labelAtualGrupoTransacao = labelGrupoTransacao;
                 gruposTransacoes.push({
@@ -88,48 +58,39 @@ export class Conta
             }
             gruposTransacoes.at(-1).transacoes.push(transacao);
         }
-
         return gruposTransacoes;
     }
-
-    public registrarTransacao(novaTransacao: Transacao): void {
+    registrarTransacao(novaTransacao) {
         if (novaTransacao.getTipoTransacao() == TipoTransacao.DEPOSITO) {
             this.depositar(novaTransacao.getValor());
-        } 
+        }
         else if (novaTransacao.getTipoTransacao() == TipoTransacao.TRANSFERENCIA || novaTransacao.getTipoTransacao() == TipoTransacao.PAGAMENTO_BOLETO) {
             this.debitar(novaTransacao.getValor());
             novaTransacao.setValor(novaTransacao.getValor() * -1);
-        } 
+        }
         else {
             throw new Error("Tipo de Transação é inválido!");
         }
-
         this.transacoes.push(novaTransacao);
         console.log(this.transacoes);
         localStorage.setItem("transacoes", JSON.stringify(this.transacoes));
     }
-
-    public debitar(valor: number): void {
+    debitar(valor) {
         if (valor <= 0) {
             throw new Error("O valor a ser debitado deve ser maior que zero!");
         }
         if (valor > this.saldo) {
             throw new Error("Saldo insuficiente!");
         }
-    
         this.saldo -= valor;
         localStorage.setItem("saldo", this.saldo.toString());
     }
-    
-    public depositar(valor: number): void {
+    depositar(valor) {
         if (valor <= 0) {
             throw new Error("O valor a ser depositado deve ser maior que zero!");
         }
-    
         this.saldo += valor;
         localStorage.setItem("saldo", this.saldo.toString());
     }
 }
-
 export default Conta;
-
