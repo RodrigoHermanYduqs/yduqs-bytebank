@@ -1,7 +1,7 @@
 import { TipoTransacao } from "../types/transacao/TipoTransacao.js";
 import { Transacao } from "../types/transacao/Transacao.js";
 import SaldoComponent from "./saldo-component.js";
-import Conta from "../types/Conta.js";
+import Conta from "../model/Conta.js";
 import ExtratoComponent from "./extrato-component.js";
 
 const elementoFormulario = document.querySelector(".block-nova-transacao form") as HTMLFormElement;

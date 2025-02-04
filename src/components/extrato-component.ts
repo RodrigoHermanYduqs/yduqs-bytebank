@@ -1,4 +1,4 @@
-import Conta from "../types/Conta.js";
+import Conta from "../model/Conta.js";
 import { FormatoData } from "../types/FormatoData.js";
 import { GrupoTransacao } from "../types/transacao/GrupoTransacao.js";
 import { formatarData, formatarMoeda } from "../utils/formatters.js";
